@@ -8,4 +8,6 @@ This workbench contains tools to interact with different web services:
 
 ## Installation
 
-This Workbench is part of the [FreeCAD addons](https://github.com/FreeCAD/FreeCAD-addons) collection and can be installed from the Addons manager.
+This Workbench is part of the [FreeCAD addons](https://github.com/FreeCAD/FreeCAD-addons) collection and can be simply installed from the Addons manager.
+
+Alternatively, it can also be installed manually by downloading and copying its contents in a folder inside your FreeCAD Mod directory (see the [addons page](https://github.com/yorikvanhavre/WebTools.git) for detailed instructions)

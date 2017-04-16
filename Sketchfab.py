@@ -26,17 +26,21 @@ __title__ = "Sketchfab uploader"
 __author__ = "Yorik van Havre"
 __url__ = "http://www.freecadweb.org"
 
-import FreeCAD, FreeCADGui, WebGui, os, zipfile, requests, tempfile, json, time, re
-from PySide import QtCore, QtGui
+import FreeCAD, os, zipfile, requests, tempfile, json, time, re
 
-# \cond
-try:
-    def translate(context, text, disambig=None):
-        return QtGui.QApplication.translate(context, text, disambig, QtGui.QApplication.UnicodeUTF8)
-except AttributeError:
-    def translate(context, text, disambig=None):
-        return QtGui.QApplication.translate(context, text, disambig)
-# \endcond
+if FreeCAD.GuiUp:
+    import FreeCADGui, WebGui
+    from PySide import QtCore, QtGui
+    from PySide.QtCore import QT_TRANSLATE_NOOP
+    from DraftTools import translate
+else:
+    # \cond
+    def translate(ctxt,txt):
+        return txt
+    def QT_TRANSLATE_NOOP(ctxt,txt):
+        return txt
+    # \endcond
+
 
 SKETCHFAB_UPLOAD_URL = "https://api.sketchfab.com/v3/models"
 SKETCHFAB_TOKEN_URL = "https://sketchfab.com/settings/password"
@@ -48,7 +52,7 @@ class CommandSketchfab:
     "the WebTools_BimServer command definition"
     
     def GetResources(self):
-        return {'Pixmap'  : 'sketchfab',
+        return {'Pixmap'  : os.path.join(os.path.dirname(__file__),"icons",'sketchfab.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("WebTools_Sketchfab","Sketchfab"),
                 'ToolTip': QT_TRANSLATE_NOOP("WebTools_Sketchfab","Connects and uploads a model to a Sketchfab account")}
 
@@ -73,7 +77,7 @@ class SketchfabTaskPanel:
     def __init__(self):
         
         self.url = None
-        self.form = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.basedir(__file__),"ui","TaskDlgSketchfab.ui")
+        self.form = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","TaskSketchfab.ui"))
         self.form.ProgressBar.hide()
         self.form.Button_View.hide()
         QtCore.QObject.connect(self.form.Button_Token,QtCore.SIGNAL("pressed()"),self.getToken)

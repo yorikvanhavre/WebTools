@@ -33,9 +33,8 @@ class WebToolsWorkbench (Workbench):
     def Initialize(self):
         import BIMServer, Git, Sketchfab
         cmds = ["WebTools_Git","WebTools_BimServer","WebTools_Sketchfab"]
-        self.appendToolbar(QT_TRANSLATE_NOOP("Workbench","Web tools"),cmds)
-        self.appendMenu(QT_TRANSLATE_NOOP("WebTools","Web &Tools"),cmds)
-        
+        self.appendToolbar("Web tools",cmds)
+        self.appendMenu("Web &Tools",cmds)
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"

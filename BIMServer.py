@@ -46,7 +46,7 @@ class CommandBimServer:
     "the WebTools_BimServer command definition"
     
     def GetResources(self):
-        return {'Pixmap'  : 'bimserver',
+        return {'Pixmap'  : os.path.join(os.path.dirname(__file__),"icons",'bimserver.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("WebTools_BimServer","BIM server"),
                 'ToolTip': QT_TRANSLATE_NOOP("WebTools_BimServer","Connects and interacts with a BIM server instance")}
 
@@ -69,8 +69,8 @@ class BimServerTaskPanel:
     '''The TaskPanel for the BimServer command'''
     
     def __init__(self):
-        self.form = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.basedir(__file__),"ui","TaskBimServer.ui"))
-        self.form.setWindowIcon(QtGui.QIcon(os.path.join(os.path.basedir(__file__),"icons","bimserver.svg")))
+        self.form = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","TaskBimServer.ui"))
+        self.form.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__),"icons","bimserver.svg")))
         self.form.labelStatus.setText("")
         QtCore.QObject.connect(self.form.buttonServer, QtCore.SIGNAL("clicked()"), self.login)
         QtCore.QObject.connect(self.form.buttonBrowser, QtCore.SIGNAL("clicked()"), self.browse)
@@ -124,7 +124,7 @@ class BimServerTaskPanel:
             self.prefs.SetString("BimServerToken","")
         else:
             url,token = self.getPrefs()
-            loginform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.basedir(__file__),"ui","DialogBimServerLogin.ui"))
+            loginform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","DialogBimServerLogin.ui"))
             loginform.editUrl.setText(url)
             dlg = loginform.exec_()
             if dlg:

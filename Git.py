@@ -46,7 +46,7 @@ class CommandGit:
     "the WebTools_Git command definition"
     
     def GetResources(self):
-        return {'Pixmap'  : 'git',
+        return {'Pixmap'  : os.path.join(os.path.dirname(__file__),"icons",'git.svg'),
                 'MenuText': QtCore.QT_TRANSLATE_NOOP("WebTools_Git","Git"),
                 'ToolTip': QtCore.QT_TRANSLATE_NOOP("WebTools_Git","Manages the current document with Git")}
 
@@ -74,8 +74,8 @@ class GitTaskPanel:
     '''The TaskPanel for the Git command'''
     
     def __init__(self,repo):
-        self.form = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.basedir(__file__),"ui","TaskGit.ui"))
-        self.form.setWindowIcon(QtGui.QIcon(os.path.join(os.path.basedir(__file__),"icons","git.svg")))
+        self.form = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","TaskGit.ui"))
+        self.form.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__),"icons","git.svg")))
         self.form.labelStatus.setText("")
         QtCore.QObject.connect(self.form.buttonRefresh, QtCore.SIGNAL("clicked()"), self.getFiles)
         QtCore.QObject.connect(self.form.buttonLog, QtCore.SIGNAL("clicked()"), self.getLog)
@@ -106,7 +106,7 @@ class GitTaskPanel:
         self.form.labelStatus.setText(translate("WebTools","Branch")+": "+self.repo.active_branch.name)
 
     def getLog(self):
-        textform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.basedir(__file__),"ui","DialogDisplayText.ui"))
+        textform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","DialogDisplayText.ui"))
         textform.setWindowTitle("Git log")
         textform.browserText.setPlainText(self.repo.git.log())
         textform.exec_()
@@ -114,7 +114,7 @@ class GitTaskPanel:
     def getDiff(self):
         if (self.form.listFiles.currentRow() >= 0):
             f = (self.modified+self.untracked)[self.form.listFiles.currentRow()]
-            textform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.basedir(__file__),"ui","DialogDisplayText.ui"))
+            textform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","DialogDisplayText.ui"))
             textform.setWindowTitle("Diff: "+f)
             textform.browserText.setPlainText(self.repo.git.diff(f))
             textform.exec_()

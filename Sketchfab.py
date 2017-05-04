@@ -80,9 +80,12 @@ class SketchfabTaskPanel:
         self.form = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","TaskSketchfab.ui"))
         self.form.ProgressBar.hide()
         self.form.Button_View.hide()
+        self.form.fixLabel.hide()
+        self.form.fixButton.hide()
         QtCore.QObject.connect(self.form.Button_Token,QtCore.SIGNAL("pressed()"),self.getToken)
         QtCore.QObject.connect(self.form.Button_Upload,QtCore.SIGNAL("pressed()"),self.upload)
         QtCore.QObject.connect(self.form.Button_View,QtCore.SIGNAL("pressed()"),self.viewModel)
+        QtCore.QObject.connect(self.form.fixButton,QtCore.SIGNAL("pressed()"),self.fix)
         self.form.Text_Name.setText(FreeCAD.ActiveDocument.Label)
         self.form.Text_Token.setText(FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Web").GetString("SketchfabToken",""))
 
@@ -161,11 +164,12 @@ class SketchfabTaskPanel:
             vinfo = "# Exported by FreeCAD v" + ver[0] + "." + ver[1] + " build" + ver[2] + "\n"
             vinfo += "# http://www.freecadweb.org\n"
             s = s.replace("#Inventor V2.1 ascii","#Inventor V2.1 ascii\n"+vinfo)
-            s = s.replace("SoBrepEdgeSet","SoIndexedLineSet")
-            s = s.replace("SoBrepFaceSet","SoIndexedFaceSet")
+            s = s.replace("SoBrepEdgeSet","IndexedLineSet")
+            s = s.replace("SoBrepFaceSet","IndexedFaceSet")
             s = s.replace("\n","--endl--")
-            s = re.sub("highlightIndex .*?\]"," ",s)
-            s = re.sub("partIndex .*?\]"," ",s)
+            s = re.sub("--endl--[ \t]+highlightIndex.*?--endl--","--endl--",s)
+            s = re.sub("--endl--[ \t]+partIndex.*?--endl--","--endl--",s)
+            s = re.sub("--endl--[ \t]+selectionIndex.*?--endl--","--endl--",s)
             s = s.replace("--endl--","\n")
             f = open(filename+".iv","wb")
             f.write(s)
@@ -198,11 +202,15 @@ class SketchfabTaskPanel:
         if not self.form.Text_Token.text():
             QtGui.QMessageBox.critical(None,translate("WebTools","No token provided"),translate("The token is empty. Please press the Obtain button to get your user API token from Sketchfab, then copy / paste the API token to the field below"))
             return
+            
+        # saving file
         FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Web").SetString("SketchfabToken",self.form.Text_Token.text())
         pack = self.saveFile()
         if not pack:
             QtGui.QMessageBox.critical(None,translate("WebTools","File packing error"),translate("Unable to save and zip a file for upload"))
             return
+            
+        # preparing model data
         if os.path.getsize(pack[0]) >= 52428800:
             b = QtGui.QMessageBox()
             b.setText(translate("WebTools","Big upload"))
@@ -222,6 +230,8 @@ class SketchfabTaskPanel:
         files = {
             "modelFile": open(pack[0], 'rb')
             }
+            
+        # performing upload
         self.form.Button_Upload.hide()
         # for now this is a fake progress bar, it won't move, just to show the user that the upload is in progress
         self.form.ProgressBar.setFormat(translate("WebTools","Uploading")+" "+pack[1]+"...")
@@ -240,17 +250,26 @@ class SketchfabTaskPanel:
             self.form.Button_Upload.show()
             return
         self.url = r.headers['Location']
-        if self.form.Combo_Filetype.currentIndex() in [0,1,5]: # OBJ format, sketchfab expects inverted Y/Z axes
-            self.form.ProgressBar.setFormat(translate("WebTools","Awaiting confirmation..."))
-            self.form.ProgressBar.setValue(75)
-            if self.poll(self.url):
-                self.form.ProgressBar.setFormat(translate("WebTools","Fixing model..."))
-                QtGui.qApp.processEvents()
-                self.patch(self.url)
-            else:
-                QtGui.QMessageBox.warning(None,translate("WebTools","Patch error"),translate("WebTools","Patching failed. The model was successfully uploaded, but might still require manual adjustments:"))
+        
+        # patching model
+        if self.form.Combo_Filetype.currentIndex() in [0,1,5]: # OBJ and IV formats: sketchfab expects inverted Y/Z axes
+            self.form.fixLabel.show()
+            self.form.fixButton.show()
         self.form.ProgressBar.hide()
         self.form.Button_View.show()
+        
+    def fix(self):
+        
+        self.form.ProgressBar.show()
+        self.form.ProgressBar.setFormat(translate("WebTools","Awaiting confirmation..."))
+        self.form.ProgressBar.setValue(75)
+        if self.poll(self.url):
+            self.form.ProgressBar.setFormat(translate("WebTools","Fixing model..."))
+            QtGui.qApp.processEvents()
+            self.patch(self.url)
+        else:
+            QtGui.QMessageBox.warning(None,translate("WebTools","Patch error"),translate("WebTools","Patching failed. The model was successfully uploaded, but might still require manual adjustments."))
+        self.form.ProgressBar.hide()
         
     def poll(self,url):
         

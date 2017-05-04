@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>218</width>
-    <height>548</height>
+    <width>226</width>
+    <height>688</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../Web.qrc">:/icons/Sketchfab.svg</pixmap>
+      <pixmap resource="../../../../Sources/FreeCAD/src/Mod/Web/Gui/Resources/Web.qrc">:/icons/Sketchfab.svg</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -203,6 +203,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="Button_View">
+     <property name="text">
+      <string>Success! View uploaded online</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QProgressBar" name="ProgressBar">
      <property name="value">
       <number>25</number>
@@ -213,15 +220,26 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="Button_View">
+    <widget class="QLabel" name="fixLabel">
      <property name="text">
-      <string>Success! View uploaded online</string>
+      <string>This file format uses different axes orientation than FreeCAD. The model will land on Sketchfab with a wrong orientation. You can attempt to fix the sketchfab model by pressing the button below, or fix manually in Sketchfab</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="fixButton">
+     <property name="text">
+      <string>Fix model orientation</string>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
  <resources>
+  <include location="../../../../Sources/FreeCAD/src/Mod/Web/Gui/Resources/Web.qrc"/>
   <include location="../Web.qrc"/>
  </resources>
  <connections/>

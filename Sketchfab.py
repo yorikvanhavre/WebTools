@@ -155,7 +155,13 @@ class SketchfabTaskPanel:
             return self.packFiles(filename,[filename+".iges"])
         elif filetype == 5: # IV
             import FreeCADGui
-            FreeCADGui.export(objects,filename+".iv")
+            # remove objects with no face (unsupported by this format)
+            nobjects = []
+            for o in objects:
+                if o.isDerivedFrom("Part::Feature"):
+                    if o.Shape.Faces:
+                        nobjects.append(o)
+            FreeCADGui.export(nobjects,filename+".iv")
             # removing FreeCAD-specific nodes
             f = open(filename+".iv","rb")
             s = f.read()
@@ -166,14 +172,20 @@ class SketchfabTaskPanel:
             s = s.replace("#Inventor V2.1 ascii","#Inventor V2.1 ascii\n"+vinfo)
             s = s.replace("SoBrepEdgeSet","IndexedLineSet")
             s = s.replace("SoBrepFaceSet","IndexedFaceSet")
+            s = s.replace("SoBrepPointSet","IndexedPointSet")
             s = s.replace("\n","--endl--")
             s = re.sub("--endl--[ \t]+highlightIndex.*?--endl--","--endl--",s)
             s = re.sub("--endl--[ \t]+partIndex.*?--endl--","--endl--",s)
             s = re.sub("--endl--[ \t]+selectionIndex.*?--endl--","--endl--",s)
+            s = re.sub("SFInt32 highlightIndex, ","",s)
+            s = re.sub("MFInt32 partIndex, ","",s)
+            s = re.sub("MFInt32 selectionIndex ","",s)
+            s = re.sub(", \]"," \]",s)
             s = s.replace("--endl--","\n")
             f = open(filename+".iv","wb")
             f.write(s)
             f.close()
+            print("saved "+filename+".iv")
             return self.packFiles(filename,[filename+".iv"])
 
     def packFiles(self,filename,fileslist):
@@ -183,7 +195,7 @@ class SketchfabTaskPanel:
                 return None
         z = zipfile.ZipFile(filename+".zip","w")
         for f in fileslist:
-            z.write(f)
+            z.write(f,os.path.basename(f))
         z.close()
         for f in fileslist:
             os.remove(f)

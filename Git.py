@@ -61,7 +61,7 @@ class CommandGit:
             FreeCAD.Console.PrintError(translate("WebTools","The Python Git module was not found. Please install the python-git package.\n"))
             return
         try:
-            repo = git.Repo(os.path.dirname(f))
+            repo = git.Repo(os.path.dirname(f), search_parent_directories=True)
         except:
             FreeCAD.Console.PrintError(translate("WebTools","This document doesn't appear to be part of a Git repository.\n"))
             return

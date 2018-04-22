@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>227</width>
+    <height>485</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Speckle.Works</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Specke.works server</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QComboBox" name="serverList">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <item>
+         <property name="text">
+          <string>http://localhost:3000</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QComboBox" name="userList">
+          <item>
+           <property name="text">
+            <string>No users</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="maximumSize">
+           <size>
+            <width>32</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="buttonConnect">
+        <property name="text">
+         <string>Connect</string>
+        </property>
+        <property name="icon">
+         <iconset theme="gtk-connect"/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Models</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QListWidget" name="streamList"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="buttonOpen">
+        <property name="text">
+         <string>Open</string>
+        </property>
+        <property name="icon">
+         <iconset theme="gtk-open"/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="buttonDelete">
+        <property name="text">
+         <string>Delete</string>
+        </property>
+        <property name="icon">
+         <iconset theme="gtk-delete"/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Diff</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="buttonInsert">
+          <property name="text">
+           <string>Sync</string>
+          </property>
+          <property name="icon">
+           <iconset theme="gtk-paste"/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

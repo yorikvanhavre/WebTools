@@ -248,7 +248,7 @@ class SketchfabTaskPanel:
         # for now this is a fake progress bar, it won't move, just to show the user that the upload is in progress
         self.form.ProgressBar.setFormat(translate("WebTools","Uploading")+" "+pack[1]+"...")
         self.form.ProgressBar.show()
-        QtGui.qApp.processEvents()
+        QtGui.QApplication.instance().processEvents()
         try:
             r = requests.post(SKETCHFAB_UPLOAD_URL, **self.get_request_payload(self.form.Text_Token.text(), data, files=files))
         except requests.exceptions.RequestException as e:
@@ -277,7 +277,7 @@ class SketchfabTaskPanel:
         self.form.ProgressBar.setValue(75)
         if self.poll(self.url):
             self.form.ProgressBar.setFormat(translate("WebTools","Fixing model..."))
-            QtGui.qApp.processEvents()
+            QtGui.QApplication.instance().processEvents()
             self.patch(self.url)
         else:
             QtGui.QMessageBox.warning(None,translate("WebTools","Patch error"),translate("WebTools","Patching failed. The model was successfully uploaded, but might still require manual adjustments."))

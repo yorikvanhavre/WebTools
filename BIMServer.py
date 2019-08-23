@@ -258,11 +258,11 @@ class BimServerTaskPanel:
                 if not serializer:
                     FreeCAD.Console.PrintError(translate("WebTools","Unable to get a valid serializer from the BimServer\n"))
                     return
-                tf = QtGui.QFileDialog.getSaveFileName(QtGui.qApp.activeWindow(), "Save the downloaded IFC file?", None, "IFC files (*.ifc)")
+                tf = QtGui.QFileDialog.getSaveFileName(QtGui.QApplication.activeWindow(), "Save the downloaded IFC file?", None, "IFC files (*.ifc)")
                 if tf:
                     tf = tf[0]
                 self.form.labelStatus.setText(translate("WebTools","Downloading file..."))
-                data = { "token": token, "request": { "interface": "ServiceInterface", "method": "downloadRevisions", "parameters": { "roids": [rev["oid"]], "serializerOid": serializer["oid"], "sync": "false" } } }
+                data = { "token": token, "request": { "interface": "ServiceInterface", "method": "download", "parameters": { "roids": [rev["oid"]], "serializerOid": serializer["oid"], "query": "{\"includeAllFields\": true}", "sync": "false" } } }
                 resp = requests.post(url,data = json.dumps(data))
                 if resp.ok:
                     try:
@@ -282,14 +282,13 @@ class BimServerTaskPanel:
                         FreeCAD.Console.PrintMessage(translate("WebTools","Opening file...\n"))
                         self.form.labelStatus.setText(translate("WebTools","Opening file..."))
                         if not tf:
-                            th,tf = tempfile.mkstemp(suffix=".ifc")
+                            tf = os.path.join(tempfile._get_default_tempdir(), next(tempfile._get_candidate_names()) + ".ifc")
                         f = open(tf,"wb")
                         f.write(base64.b64decode(downloaddata))
                         f.close()
-                        os.close(th)
                         import importIFC
                         importIFC.open(tf)
-                        os.remove(tf)
+                        os.remove(tf) # why first ask for a name if we remove it anyway?
         self.form.labelStatus.setText("")
 
     def uploadFile(self):
@@ -318,7 +317,7 @@ class BimServerTaskPanel:
                 if not deserializer:
                     FreeCAD.Console.PrintError(translate("WebTools","Unable to get a valid deserializer for the schema")+" "+schema+"\n")
                     return
-                tf = QtGui.QFileDialog.getSaveFileName(QtGui.qApp.activeWindow(), translate("WebTools","Save the IFC file before uploading?"), None, translate("WebTools","IFC files (*.ifc)"))
+                tf = QtGui.QFileDialog.getSaveFileName(QtGui.QApplication.activeWindow(), translate("WebTools","Save the IFC file before uploading?"), None, translate("WebTools","IFC files (*.ifc)"))
                 if tf:
                     tf = tf[0]
                 if not tf:

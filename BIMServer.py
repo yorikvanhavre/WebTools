@@ -258,11 +258,11 @@ class BimServerTaskPanel:
                 if not serializer:
                     FreeCAD.Console.PrintError(translate("WebTools","Unable to get a valid serializer from the BimServer\n"))
                     return
-                tf = QtGui.QFileDialog.getSaveFileName(QtGui.qApp.activeWindow(), "Save the downloaded IFC file?", None, "IFC files (*.ifc)")
+                tf = QtGui.QFileDialog.getSaveFileName(QtGui.QApplication.activeWindow(), "Save the downloaded IFC file?", None, "IFC files (*.ifc)")
                 if tf:
                     tf = tf[0]
                 self.form.labelStatus.setText(translate("WebTools","Downloading file..."))
-                data = { "token": token, "request": { "interface": "ServiceInterface", "method": "downloadRevisions", "parameters": { "roids": [rev["oid"]], "serializerOid": serializer["oid"], "sync": "false" } } }
+                data = { "token": token, "request": { "interface": "ServiceInterface", "method": "download", "parameters": { "roids": [rev["oid"]], "serializerOid": serializer["oid"], "query": "{\"includeAllFields\": true}", "sync": "false" } } }
                 resp = requests.post(url,data = json.dumps(data))
                 if resp.ok:
                     try:
@@ -282,14 +282,13 @@ class BimServerTaskPanel:
                         FreeCAD.Console.PrintMessage(translate("WebTools","Opening file...\n"))
                         self.form.labelStatus.setText(translate("WebTools","Opening file..."))
                         if not tf:
-                            th,tf = tempfile.mkstemp(suffix=".ifc")
+                            tf = tempfile.mktemp(suffix=".ifc")
                         f = open(tf,"wb")
                         f.write(base64.b64decode(downloaddata))
                         f.close()
-                        os.close(th)
                         import importIFC
                         importIFC.open(tf)
-                        os.remove(tf)
+                        os.remove(tf) # why first ask for a name if we remove it anyway?
         self.form.labelStatus.setText("")
 
     def uploadFile(self):
@@ -318,25 +317,30 @@ class BimServerTaskPanel:
                 if not deserializer:
                     FreeCAD.Console.PrintError(translate("WebTools","Unable to get a valid deserializer for the schema")+" "+schema+"\n")
                     return
-                tf = QtGui.QFileDialog.getSaveFileName(QtGui.qApp.activeWindow(), translate("WebTools","Save the IFC file before uploading?"), None, translate("WebTools","IFC files (*.ifc)"))
-                if tf:
+                tf = QtGui.QFileDialog.getSaveFileName(QtGui.QApplication.activeWindow(), translate("WebTools","Save the IFC file before uploading?"), None, translate("WebTools","IFC files (*.ifc)"))
+                comment = self.form.editComment.text()
+                if tf and tf[0]:
                     tf = tf[0]
-                if not tf:
-                    tf = os.path.join(tempfile._get_default_tempdir(),next(tempfile._get_candidate_names())+".ifc")
+                    if not comment:
+                        comment = os.path.basename(tf)
+                else:
+                    tf = tempfile.mktemp(suffix=".ifc")
                 import importIFC
                 self.form.labelStatus.setText(translate("WebTools","Saving file..."))
                 importIFC.export([self.RootObjects[self.form.comboRoot.currentIndex()]],tf)
                 f = open(tf,"rb")
-                ifcdata = base64.b64encode(f.read())
+                ifcdata = base64.b64encode(f.read()).decode("ascii")
                 f.close()
                 FreeCAD.Console.PrintMessage(translate("WebTools","Uploading file to Bimserver...\n"))
                 self.form.labelStatus.setText(translate("WebTools","Uploading file..."))
-                data = { "token": token, "request": { "interface": "ServiceInterface", "method": "checkin", "parameters": { "poid": project["oid"], "comment": self.form.editComment.text(), "deserializerOid": deserializer["oid"], "fileSize": os.path.getsize(tf), "fileName": os.path.basename(tf), "data": ifcdata, "merge": "false", "sync": "true" } } }
+                data = { "token": token, "request": { "interface": "ServiceInterface", "method": "checkinSync", "parameters": { "poid": project["oid"], "comment": comment, "deserializerOid": deserializer["oid"], "fileSize": os.path.getsize(tf), "fileName": os.path.basename(tf), "data": ifcdata, "merge": "false" } } }
                 resp = requests.post(url,data = json.dumps(data))
                 if resp.ok:
-                    if resp.json()["response"]["result"]:
+                    if "result" in resp.json()["response"]:
                         FreeCAD.Console.PrintMessage(translate("WebTools","File upload successful\n"))
                         self.getRevisions(self.form.comboProjects.currentIndex())
+                    elif "exception" in resp.json()["response"]:
+                        FreeCAD.Console.PrintError(translate("WebTools","File upload failed, caused by: ")+resp.json()["response"]["exception"]["message"]+"\n")
                     else:
                         FreeCAD.Console.PrintError(translate("WebTools","File upload failed\n"))
         self.form.labelStatus.setText("")

@@ -52,7 +52,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="editPassword"/>
+      <widget class="QLineEdit" name="editPassword">
+       <property name="echoMode">
+         <enum>QLineEdit::Password</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -64,7 +68,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

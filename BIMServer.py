@@ -282,7 +282,7 @@ class BimServerTaskPanel:
                         FreeCAD.Console.PrintMessage(translate("WebTools","Opening file...\n"))
                         self.form.labelStatus.setText(translate("WebTools","Opening file..."))
                         if not tf:
-                            tf = os.path.join(tempfile._get_default_tempdir(), next(tempfile._get_candidate_names()) + ".ifc")
+                            tf = tempfile.mktemp(suffix=".ifc")
                         f = open(tf,"wb")
                         f.write(base64.b64decode(downloaddata))
                         f.close()
@@ -319,12 +319,12 @@ class BimServerTaskPanel:
                     return
                 tf = QtGui.QFileDialog.getSaveFileName(QtGui.QApplication.activeWindow(), translate("WebTools","Save the IFC file before uploading?"), None, translate("WebTools","IFC files (*.ifc)"))
                 comment = self.form.editComment.text()
-                if tf:
+                if tf and tf[0]:
                     tf = tf[0]
-                    if(not comment):
+                    if not comment:
                         comment = os.path.basename(tf)
-                if not tf:
-                    tf = os.path.join(tempfile._get_default_tempdir(),next(tempfile._get_candidate_names())+".ifc")
+                else:
+                    tf = tempfile.mktemp(suffix=".ifc")
                 import importIFC
                 self.form.labelStatus.setText(translate("WebTools","Saving file..."))
                 importIFC.export([self.RootObjects[self.form.comboRoot.currentIndex()]],tf)
@@ -333,7 +333,7 @@ class BimServerTaskPanel:
                 f.close()
                 FreeCAD.Console.PrintMessage(translate("WebTools","Uploading file to Bimserver...\n"))
                 self.form.labelStatus.setText(translate("WebTools","Uploading file..."))
-                data = { "token": token, "request": { "interface": "ServiceInterface", "method": "checkinAsync", "parameters": { "poid": project["oid"], "comment": comment, "deserializerOid": deserializer["oid"], "fileSize": os.path.getsize(tf), "fileName": os.path.basename(tf), "data": ifcdata, "merge": "false" } } }
+                data = { "token": token, "request": { "interface": "ServiceInterface", "method": "checkinSync", "parameters": { "poid": project["oid"], "comment": comment, "deserializerOid": deserializer["oid"], "fileSize": os.path.getsize(tf), "fileName": os.path.basename(tf), "data": ifcdata, "merge": "false" } } }
                 resp = requests.post(url,data = json.dumps(data))
                 if resp.ok:
                     if "result" in resp.json()["response"]:

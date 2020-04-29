@@ -34,7 +34,7 @@ else:
     def QT_TRANSLATE_NOOP(ctxt,txt):
         return txt
     # \endcond
-    
+
 
 __title__="FreeCAD BimServer command"
 __author__ = "Yorik van Havre"
@@ -42,9 +42,9 @@ __url__ = "http://www.freecadweb.org"
 
 
 class CommandBimServer:
-    
+
     "the WebTools_BimServer command definition"
-    
+
     def GetResources(self):
         return {'Pixmap'  : os.path.join(os.path.dirname(__file__),"icons",'bimserver.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("WebTools_BimServer","BIM server"),
@@ -65,9 +65,9 @@ class CommandBimServer:
 
 
 class BimServerTaskPanel:
-    
+
     '''The TaskPanel for the BimServer command'''
-    
+
     def __init__(self):
         self.form = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","TaskBimServer.ui"))
         self.form.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__),"icons","bimserver.svg")))
@@ -87,7 +87,7 @@ class BimServerTaskPanel:
         url,token = self.getPrefs()
         if url and token:
             self.getProjects()
-            
+
     def getStandardButtons(self):
         return int(QtGui.QDialogButtonBox.Close)
 
@@ -103,7 +103,7 @@ class BimServerTaskPanel:
             if token:
                 self.token = token
         return url,token
-        
+
     def setLogged(self,logged):
         if logged:
             self.form.buttonServer.setText("Connected")
@@ -303,7 +303,7 @@ class BimServerTaskPanel:
                 FreeCAD.Console.PrintMessage(translate("WebTools","Saving file...\n"))
                 self.form.labelStatus.setText(translate("WebTools","Checking available deserializers..."))
                 import ifcopenshell
-                schema = ifcopenshell.schema_identifier.lower()
+                schema = ifcopenshell.file().schema.lower()
                 data = { "token": token, "request": { "interface": "PluginInterface",  "method": "getAllDeserializers", "parameters": { "onlyEnabled": "true" } } }
                 resp = requests.post(url,data = json.dumps(data))
                 if resp.ok:
@@ -325,9 +325,9 @@ class BimServerTaskPanel:
                         comment = os.path.basename(tf)
                 else:
                     tf = tempfile.mktemp(suffix=".ifc")
-                import importIFC
+                import exportIFC
                 self.form.labelStatus.setText(translate("WebTools","Saving file..."))
-                importIFC.export([self.RootObjects[self.form.comboRoot.currentIndex()]],tf)
+                exportIFC.export([self.RootObjects[self.form.comboRoot.currentIndex()]],tf)
                 f = open(tf,"rb")
                 ifcdata = base64.b64encode(f.read()).decode("ascii")
                 f.close()

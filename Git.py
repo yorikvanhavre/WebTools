@@ -106,10 +106,15 @@ class GitTaskPanel:
         self.form.labelStatus.setText(translate("WebTools","Branch")+": "+self.repo.active_branch.name)
 
     def getLog(self):
-        textform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","DialogDisplayText.ui"))
-        textform.setWindowTitle("Git log")
-        textform.browserText.setPlainText(self.repo.git.log())
-        textform.exec_()
+        try:
+            l = self.repo.git.log()
+        except:
+            FreeCAD.Console.PrintWarning(translate("WebTools","Warning: Unable to get log:")+str(f)+"\n")
+        else:
+            textform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","DialogDisplayText.ui"))
+            textform.setWindowTitle("Git log")
+            textform.browserText.setPlainText(l)
+            textform.exec_()
         
     def getDiff(self):
         if (self.form.listFiles.currentRow() >= 0):

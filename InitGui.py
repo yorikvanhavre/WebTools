@@ -32,7 +32,7 @@ class WebToolsWorkbench (Workbench):
 
     def Initialize(self):
         import BIMServer, Git, Sketchfab
-        cmds = ["WebTools_Git","WebTools_BimServer","WebTools_Sketchfab","WebTools_Speckle"]
+        cmds = ["WebTools_Git","WebTools_BimServer","WebTools_Sketchfab"] #,"WebTools_Speckle"]
         self.appendToolbar("Web tools",cmds)
         self.appendMenu("Web &Tools",cmds)
 

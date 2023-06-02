@@ -51,6 +51,9 @@ class CommandGit:
                 'ToolTip': QtCore.QT_TRANSLATE_NOOP("WebTools_Git","Manages the current document with Git")}
 
     def Activated(self):
+        if not FreeCAD.ActiveDocument or not hasattr(FreeCAD.ActiveDocument,"FileName"):
+            FreeCAD.Console.PrintError(translate("WebTools","No document opened. Please open or create a document first.")+"\n")
+            return
         f = FreeCAD.ActiveDocument.FileName
         if not f:
             FreeCAD.Console.PrintError(translate("WebTools","This document is not saved. Please save it first.")+"\n")

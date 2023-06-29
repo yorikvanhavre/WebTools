@@ -89,7 +89,6 @@ class GitTaskPanel:
         self.form.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__),"icons","git.svg")))
         self.form.labelStatus.setText("")
         QtCore.QObject.connect(self.form.buttonRefresh, QtCore.SIGNAL("clicked()"), self.getFiles)
-        QtCore.QObject.connect(self.form.buttonLog, QtCore.SIGNAL("clicked()"), self.getLog)
         QtCore.QObject.connect(self.form.buttonSelectAll, QtCore.SIGNAL("clicked()"), self.form.listFiles.selectAll)
         QtCore.QObject.connect(self.form.buttonDiff, QtCore.SIGNAL("clicked()"), self.getDiff)
         QtCore.QObject.connect(self.form.buttonCommit, QtCore.SIGNAL("clicked()"), self.commit)
@@ -98,6 +97,7 @@ class GitTaskPanel:
         self.repo = repo
         self.getRemotes()
         self.getFiles()
+        self.getLog()
 
     def getStandardButtons(self):
         return int(QtGui.QDialogButtonBox.Close)
@@ -118,14 +118,17 @@ class GitTaskPanel:
 
     def getLog(self):
         try:
-            l = self.repo.git.log()
+            l = self.repo.git.log("-n 25","--date=format:%Y.%m.%d","--pretty=format:%ad %s")
         except:
             FreeCAD.Console.PrintWarning(translate("WebTools","Warning: Unable to get log for this repo")+"\n")
         else:
-            textform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","DialogDisplayText.ui"))
-            textform.setWindowTitle("Git log")
-            textform.browserText.setPlainText(l)
-            textform.exec_()
+            #textform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","DialogDisplayText.ui"))
+            #textform.setWindowTitle("Git log")
+            #textform.browserText.setPlainText(l)
+            #textform.exec_()
+            self.form.logView.clear()
+            self.form.logView.addItems(l.split("\n"))
+            
         
     def getDiff(self):
         if (self.form.listFiles.currentRow() >= 0):
@@ -168,6 +171,7 @@ class GitTaskPanel:
             FreeCAD.Console.PrintMessage(s+"\n")
             self.form.editMessage.setText("")
         self.getFiles()
+        self.getLog()
         
     def push(self):
         if len(self.form.listRepos.selectedItems()) != 1:

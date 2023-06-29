@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>255</width>
-    <height>516</height>
+    <width>309</width>
+    <height>628</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,13 +41,6 @@
            </size>
           </property>
          </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="buttonLog">
-          <property name="text">
-           <string>Log</string>
-          </property>
-         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="buttonRefresh">
@@ -192,6 +185,18 @@
          </widget>
         </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Log</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QListWidget" name="logView"/>
       </item>
      </layout>
     </widget>

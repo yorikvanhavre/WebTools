@@ -66,8 +66,16 @@ class CommandGit:
         try:
             repo = git.Repo(os.path.dirname(f), search_parent_directories=True)
         except:
-            FreeCAD.Console.PrintError(translate("WebTools","This document doesn't appear to be part of a Git repository.")+"\n")
-            return
+            reply = QtGui.QMessageBox.question(None, "Create Git repository?", "This document is not part of a Git repository. Should we create one in the folder containing this document?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+            if reply == QtGui.QMessageBox.Yes:
+                repo = git.Repo.init(os.path.dirname(f))
+            if reply == QtGui.QMessageBox.No:
+                repo = None
+            if repo:
+                FreeCADGui.Control.showDialog(GitTaskPanel(repo))
+            else:
+                FreeCAD.Console.PrintError(translate("WebTools","This document doesn't appear to be part of a Git repository.")+"\n")
+                return
         else:
             FreeCADGui.Control.showDialog(GitTaskPanel(repo))
 
@@ -112,7 +120,7 @@ class GitTaskPanel:
         try:
             l = self.repo.git.log()
         except:
-            FreeCAD.Console.PrintWarning(translate("WebTools","Warning: Unable to get log:")+str(f)+"\n")
+            FreeCAD.Console.PrintWarning(translate("WebTools","Warning: Unable to get log for this repo")+"\n")
         else:
             textform = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","DialogDisplayText.ui"))
             textform.setWindowTitle("Git log")
@@ -158,6 +166,7 @@ class GitTaskPanel:
         self.form.labelStatus.setText(translate("WebTools","Files committed."))
         if s:
             FreeCAD.Console.PrintMessage(s+"\n")
+            self.form.editMessage.setText("")
         self.getFiles()
         
     def push(self):

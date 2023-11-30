@@ -108,12 +108,14 @@ class GitTaskPanel:
     def getFiles(self):
         self.form.labelStatus.setText("")
         self.form.listFiles.clear()
-        self.modified = self.repo.git.diff("--name-only").split()
-        self.untracked = self.repo.git.ls_files("--other","--exclude-standard").split()
+        self.modified = self.repo.git.diff("--name-only").split("\n")
+        self.untracked = self.repo.git.ls_files("--other","--exclude-standard").split("\n")
         for f in self.modified:
-            self.form.listFiles.addItem(f)
+            if f:
+                self.form.listFiles.addItem(f)
         for f in self.untracked:
-            self.form.listFiles.addItem(f+" *")
+            if f:
+                self.form.listFiles.addItem(f+" *")
         self.form.labelStatus.setText(translate("WebTools","Branch")+": "+self.repo.active_branch.name)
 
     def getLog(self):

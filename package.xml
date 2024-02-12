@@ -5,7 +5,7 @@
   <version>1.0.0</version>
   <date>2022-06-29</date>
   <maintainer email="yorik@uncreated.net">Yorik van Havre</maintainer>
-  <license file="LICENSE">LGPLv2.1</license>
+  <license file="LICENSE">LGPL-2.1-or-later</license>
   <url type="repository" branch="master">https://github.com/yorikvanhavre/WebTools</url>
   <icon>icons/internet-web-browser.svg</icon>
 

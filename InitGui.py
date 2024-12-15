@@ -26,7 +26,7 @@
 class WebToolsWorkbench (Workbench):
     "Web workbench object"
     def __init__(self):
-        self.__class__.Icon = FreeCAD.getResourceDir() + "Mod/Web/Resources/icons/WebWorkbench.svg"
+        self.__class__.Icon = FreeCAD.getUserAppDataDir() + "Mod/WebTools/icons/webTools.svg"
         self.__class__.MenuText = "WebTools"
         self.__class__.ToolTip = "WebTools workbench"
 

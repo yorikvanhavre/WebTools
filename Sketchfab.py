@@ -29,7 +29,7 @@ __url__ = "http://www.freecadweb.org"
 import FreeCAD, os, zipfile, requests, tempfile, json, time, re
 
 if FreeCAD.GuiUp:
-    import FreeCADGui, WebGui
+    import FreeCADGui
     from PySide import QtCore, QtGui
     from PySide.QtCore import QT_TRANSLATE_NOOP
     from DraftTools import translate

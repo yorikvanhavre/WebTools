@@ -161,11 +161,7 @@ class BimServerTaskPanel:
 
     def browse(self):
         url = self.prefs.GetString("BimServerUrl","http://localhost:8082")+"/apps/bimviews"
-        if self.prefs.GetBool("BimServerBrowser",False):
-            FreeCADGui.addModule("WebGui")
-            FreeCADGui.doCommand("WebGui.openBrowser(\""+url+"\")")
-        else:
-            QtGui.QDesktopServices.openUrl(QtCore.QUrl(url, QtCore.QUrl.TolerantMode))
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url, QtCore.QUrl.TolerantMode))
 
     def getProjects(self):
         self.setLogged(False)

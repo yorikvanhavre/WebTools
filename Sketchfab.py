@@ -29,7 +29,7 @@ __url__ = "http://www.freecadweb.org"
 import FreeCAD, os, zipfile, requests, tempfile, json, time, re
 
 if FreeCAD.GuiUp:
-    import FreeCADGui, WebGui
+    import FreeCADGui
     from PySide import QtCore, QtGui
     from PySide.QtCore import QT_TRANSLATE_NOOP
     from DraftTools import translate
@@ -174,13 +174,13 @@ class SketchfabTaskPanel:
             s = s.replace("SoBrepFaceSet","IndexedFaceSet")
             s = s.replace("SoBrepPointSet","IndexedPointSet")
             s = s.replace("\n","--endl--")
-            s = re.sub("--endl--[ \t]+highlightIndex.*?--endl--","--endl--",s)
-            s = re.sub("--endl--[ \t]+partIndex.*?--endl--","--endl--",s)
-            s = re.sub("--endl--[ \t]+selectionIndex.*?--endl--","--endl--",s)
-            s = re.sub("SFInt32 highlightIndex, ","",s)
-            s = re.sub("MFInt32 partIndex, ","",s)
-            s = re.sub("MFInt32 selectionIndex ","",s)
-            s = re.sub(", \]"," \]",s)
+            s = re.sub(r"--endl--[ \t]+highlightIndex.*?--endl--","--endl--",s)
+            s = re.sub(r"--endl--[ \t]+partIndex.*?--endl--","--endl--",s)
+            s = re.sub(r"--endl--[ \t]+selectionIndex.*?--endl--","--endl--",s)
+            s = re.sub(r"SFInt32 highlightIndex, ","",s)
+            s = re.sub(r"MFInt32 partIndex, ","",s)
+            s = re.sub(r"MFInt32 selectionIndex ","",s)
+            s = re.sub(r", \]"," \]",s)
             s = s.replace("--endl--","\n")
             f = open(filename+".iv","wb")
             f.write(s)

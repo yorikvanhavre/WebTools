@@ -48,8 +48,8 @@ SKETCHFAB_MODEL_URL = "https://sketchfab.com/show/"
 
 
 class CommandSketchfab:
-    
-    "the WebTools_BimServer command definition"
+
+    """the WebTools_BimServer command definition"""
     
     def GetResources(self):
         return {'Pixmap'  : os.path.join(os.path.dirname(__file__),"icons",'sketchfab.svg'),
@@ -57,6 +57,10 @@ class CommandSketchfab:
                 'ToolTip': QT_TRANSLATE_NOOP("WebTools_Sketchfab","Connects and uploads a model to a Sketchfab account")}
 
     def Activated(self):
+        if not FreeCAD.ActiveDocument or not hasattr(FreeCAD.ActiveDocument, "FileName"):
+            FreeCAD.Console.PrintError(
+                translate("WebTools", "No document opened. Please open or create a document first.") + "\n")
+            return
         try:
             import requests
         except:
@@ -71,13 +75,14 @@ class CommandSketchfab:
 
 
 class SketchfabTaskPanel:
-    
-    '''The TaskPanel for Sketchfab upload'''
+
+    """The TaskPanel for Sketchfab upload"""
     
     def __init__(self):
         
         self.url = None
         self.form = FreeCADGui.PySideUic.loadUi(os.path.join(os.path.dirname(__file__),"ui","TaskSketchfab.ui"))
+        self.form.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "icons", "sketchfab.svg")))
         self.form.ProgressBar.hide()
         self.form.Button_View.hide()
         self.form.fixLabel.hide()

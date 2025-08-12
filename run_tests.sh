@@ -6,4 +6,4 @@ if [ ! -f ./FreeCAD.AppImage ]; then
     chmod +x ./FreeCAD.AppImage
 fi
 
-./FreeCAD.AppImage -M `pwd` -r TestWebTools
+./FreeCAD.AppImage -M `pwd` -t TestWebTools

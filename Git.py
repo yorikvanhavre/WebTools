@@ -60,7 +60,7 @@ class CommandGit:
             return
         try:
             import git
-        except:
+        except Exception as exception:
             FreeCAD.Console.PrintError(translate("WebTools","The Python Git module was not found. Please install the python-git package.")+"\n")
             return
         try:

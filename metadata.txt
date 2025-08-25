@@ -1,1 +1,3 @@
-optionalpylibs=python-git
+workbenches=
+pylibs=GitPython
+optionalpylibs=

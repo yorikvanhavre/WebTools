@@ -80,7 +80,8 @@ class BimServerTaskPanel:
         self.prefs = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Arch")
         self.Projects = []
         self.Revisions = []
-        self.RootObjects = Draft.getObjectsOfType(FreeCAD.ActiveDocument.Objects,"IfcSite")+Draft.getObjectsOfType(FreeCAD.ActiveDocument.Objects,"IfcBuilding")
+        self.RootObjects = Draft.getObjectsOfType(FreeCAD.ActiveDocument.Objects,"Site")+Draft.getObjectsOfType(FreeCAD.ActiveDocument.Objects,"Building")
+        self.RootObjects += Draft.getObjectsOfType(FreeCAD.ActiveDocument.Objects,"IfcSite")+Draft.getObjectsOfType(FreeCAD.ActiveDocument.Objects,"IfcBuilding")
         for o in self.RootObjects:
             self.form.comboRoot.addItem(o.Label)
         self.setLogged(False)

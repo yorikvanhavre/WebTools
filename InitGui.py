@@ -37,13 +37,14 @@ class WebToolsWorkbench(FreeCADGui.Workbench):
 
         from pathlib import Path as pyPath
         import addonmanager_utilities as utils
-        pip_exe = pyPath(utils.get_python_exe()).with_stem('pip')
+        python_exe = pyPath(utils.get_python_exe()).resolve()
+        FreeCAD.Console.PrintMessage(f"Using Python executable at: {utils.get_python_exe()}\n")
         vendor_path = pyPath(utils.get_pip_target_directory()).resolve()
         if not vendor_path.is_dir():
             vendor_path.mkdir(parents=True)
 
         import tools.metadata as metadata
-        metadata.Metadata.install_required(pip_exe, vendor_path, self.get_workbench_directory())
+        metadata.Metadata.install_required(python_exe, vendor_path, self.get_workbench_directory())
 
     @classmethod
     def get_workbench_directory(cls):

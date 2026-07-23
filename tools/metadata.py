@@ -4,7 +4,23 @@ import os
 class Metadata(object):
 
     @classmethod
-    def install_required(cls, pip_exe, vendor_path, path):
+    def _package_installed(cls, package):
+        """Returns True if the package is already installed."""
+
+        package_map = {
+            "GitPython": "git",
+        }
+
+        module_name = package_map.get(package, package)
+
+        try:
+            __import__(module_name)
+            return True
+        except ImportError:
+            return False
+        
+    @classmethod
+    def install_required(cls, pip_command, vendor_path, path):
         pylibs = []
 
         try:
@@ -18,18 +34,33 @@ class Metadata(object):
             pass
 
         if len(pylibs) > 0:
-            print(f"Installing {pylibs}")
             import subprocess
             for package in pylibs:
                 package = package.strip()
 
+                if cls._package_installed(package):
+                    print(f"{package} already installed")
+                    continue
+
                 if 'PYTHONHOME' in os.environ:
                     del os.environ['PYTHONHOME']
 
-                import subprocess
+                command = list(pip_command)
+
+                command.extend([
+                    'install',
+                    '--disable-pip-version-check',
+                    '--target',
+                    str(vendor_path),
+                    package
+                ])
+
+                print(f"Installing {package}")
+
                 p = subprocess.Popen(
-                    [pip_exe, 'install', '--disable-pip-version-check', '--target', vendor_path, package],
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                    command,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
                 )
 
                 for line in iter(p.stdout.readline, b''):
@@ -45,3 +76,5 @@ class Metadata(object):
                 p.stdout.close()
                 p.stderr.close()
                 p.wait()
+                if p.returncode != 0:
+                    print(f"Failed installing {package} (exit code {p.returncode})")

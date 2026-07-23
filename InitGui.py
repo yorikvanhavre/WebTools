@@ -37,13 +37,43 @@ class WebToolsWorkbench(FreeCADGui.Workbench):
 
         from pathlib import Path as pyPath
         import addonmanager_utilities as utils
-        pip_exe = pyPath(utils.get_python_exe()).with_stem('pip')
-        vendor_path = pyPath(utils.get_pip_target_directory()).resolve()
-        if not vendor_path.is_dir():
-            vendor_path.mkdir(parents=True)
-
         import tools.metadata as metadata
-        metadata.Metadata.install_required(pip_exe, vendor_path, self.get_workbench_directory())
+
+        # Determine how to invoke pip.
+        # Older Addon Manager versions expose get_python_exe().
+        # When unavailable, fall back to sys.executable.
+
+        if hasattr(utils, "get_python_exe"):
+
+            # Original behaviour.
+            python_exe = pyPath(utils.get_python_exe())
+            pip_command = [str(python_exe.with_stem("pip"))]
+
+        else:
+            # Fallback for newer Addon Manager versions.
+            # Some FreeCAD installations expose FreeCAD.exe as sys.executable.
+            # Use the bundled Python interpreter when available.
+            python_exe = pyPath(sys.executable)
+
+            if python_exe.name.lower() == "freecad.exe":
+                bundled_python = python_exe.with_name("python.exe")
+                if bundled_python.exists():
+                    python_exe = bundled_python
+
+            pip_command = [
+                str(python_exe),
+                "-m",
+                "pip"
+            ]
+
+        vendor_path = pyPath(utils.get_pip_target_directory()).resolve()
+        vendor_path.mkdir(parents=True, exist_ok=True)
+
+        metadata.Metadata.install_required(
+            pip_command,
+            vendor_path,
+            self.get_workbench_directory()
+        )
 
     @classmethod
     def get_workbench_directory(cls):
